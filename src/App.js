@@ -6,15 +6,16 @@ import Table from 'react-bootstrap/Table';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BiSolidEdit } from 'react-icons/bi';
-// import { GrView } from 'react-icons/gr';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Button from 'react-bootstrap/Button';
 import ViewModal from './components/View';
-// import DeleteConfirmation from './components/deleteData';
-// import Edit from './components/Edit';
-
+import Form from 'react-bootstrap/Form';
+import {BsSearch} from 'react-icons/bs';
+import {FaUsers} from 'react-icons/fa'
+import {MdAddCircleOutline} from 'react-icons/md'
+import {GrUpdate} from 'react-icons/gr';
 function App() {
   let url = "http://localhost:4500/students";
   const [post, setPost] = useState(null);
@@ -22,7 +23,12 @@ function App() {
   const [show, setShow] = useState(false);
   const [editId, setEditId] = useState("");
   const [length, setLength] = useState(0); 
-  
+  const[search,setSearch]=useState('');
+  const[order,setOrder]=useState('ASC');
+  function searchBar(e){
+    setSearch(e.target.value);
+    console.log(search);
+  }
   useEffect(() => {
     axios.get(url)
       .then((res) => {
@@ -33,11 +39,10 @@ function App() {
       .catch((error) => {
         console.log(error);
       })
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myData])
+  }, [length])
 
   function deletePost(id) {
+    console.log(id);
     if(window.confirm('Are you sure u want to detele.')){
     axios
       .delete(`${url}/${id}`)
@@ -48,16 +53,26 @@ function App() {
       });
     }
   }
-
+ 
   function updatePost(id, post) {
     setShow(true);
     setEditId(id);
     setPost(post);
   }
+const sorting=(col)=>{
+  debugger
+  console.log(col);
+  if(order==='ASC'){
+    const sorted=[...myData].sort((a,b)=>a[col].toLowerCase()>b[col].toLowerCase()? 1:-1);
+    setMyData(sorted);
+    setOrder('DSC');
+    
+}
+}
 
   function notify() {
     toast.error('Data Deleted Successfully', {
-      position: "bottom-center",
+      position: "bottom-right",
       autoClose: 3000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -70,45 +85,60 @@ function App() {
   
   return (
     <>
+    <header className='bg-primary '>
+    <div className='container heading d-flex justify-content-between '>
     
-{/* <DeleteConfirmation/> */}
-{/* <DeleteConfirmation showModal={displayConfirmationModal} confirmModal={submitDelete} hideModal={hideConfirmationModal} type={type} id={id} message={deleteMessage}  /> */}
-      <ExampleModal show={show} setShow={setShow} buttonName={editId ? "Update" : "Add"} editId={editId} setLength={setLength} post={post} modalTitle={editId ? 'Update Employee Details':'Create New Employee Details'} />
-      <div className='container mt-5'>
-        <div className='heading d-flex justify-content-evenly'>
-          <h1>Crud Operations</h1>
-          <Button variant="primary" onClick={() => {
+          <h1 style={{color:"white"}}><FaUsers style={{fontSize:"40px",color:"white", marginBottom:'5px'}}/> Employee Details</h1>
+          <div className='main'>
+          <Form.Control type="text" placeholder="Search Here" style={{width:'500px',height:'50px',marginTop:'6px'}} onChange={(e)=>{searchBar(e)}} />
+         <div className='abso' 
+     >
+       <BsSearch style={{position:'absolute',top:'36%',left:'74%'}}/>
+       </div>
+    </div>
+          <Button className='mx-1' variant='tertiary' color='tertiary' rippleColor='light' style={{width:'',height:'40px'}} onClick={() => {
             setShow(true);
             setEditId("");
             }}>
-            Create
+
+               <MdAddCircleOutline style={{fontSize:"30px",color:"white",marginTop:"5px"}}/>
           </Button>
+
         </div>
-        <Table striped bordered hover className='mt-5'>
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>First Name</th>
-              <th>Last Name</th>
+        </header>
+      <ExampleModal show={show} setShow={setShow} buttonName={editId ? "Update" : "Add"} editId={editId} setLength={setLength} post={post} modalTitle={editId ?'Update Employee Details':'Create New Employee Details'} />
+      <div className='container '>
+        
+        <Table >
+          <thead style={{textAlign:'center'}}>
+            <tr  >
+              <th  >Id</th>
+              <th onClick={()=>{sorting('FirstName')}} style={{cursor:'pointer'}}>First Name</th>
+              <th onClick={()=>{sorting('LastName')}} style={{cursor:'pointer'}}>Last Name</th>
               <th>Age</th>
               <th>Gender</th>
               <th>Actions</th>
             </tr>
           </thead>
-          {myData?.map((post) => {
+          {myData.filter((post)=>{
+            return search.toLowerCase()==='' ? post : post.FirstName.toLowerCase().includes(search) || post.LastName.toLowerCase().includes(search) || post.Age.toLowerCase().includes(search);
+          }).map((post) => {
             return (
               <>
-                <tbody>
+                <tbody style={{textAlign:'center',backgroundColor:'white !important'}}>
                   <tr>
-                    <td>{post.id}</td>
+                    <td style={{backgroundColor:'white'}}>{post.id}</td>
                     <td>{post.FirstName}</td>
                     <td>{post.LastName}</td>
                     <td>{post.Age}</td>
                     <td>{post.Gender}</td>
-                    <td> <BiSolidEdit className='me-3' style={{ color: 'green', fontSize: 25,cursor:'pointer' }} onClick={() => { updatePost(post.id, post) }}></BiSolidEdit><ViewModal id={post.id} post={post}/><AiOutlineDelete style={{ color: 'red', fontSize: 25,cursor:'pointer' }} onClick={() => deletePost(post.id)} /></td>
+                    <td> <BiSolidEdit className='me-3' style={{ color: 'green', fontSize: 25,cursor:'pointer' }} onClick={() => { updatePost(post.id, post) }}></BiSolidEdit><ViewModal id={post.id} post={post}/>
+                    
+                    
+                    <AiOutlineDelete style={{ color: 'red', fontSize: 25,cursor:'pointer' }} onClick={() => deletePost(post.id)} /></td>
                   </tr>
                   <ToastContainer
-                    position="bottom-center"
+                    position="bottom-right"
                     autoClose={3000}
                     hideProgressBar={false}
                     newestOnTop={false}

@@ -36,3 +36,24 @@
     transform: rotate(360deg);
   }
 }
+ tr th{
+  border:1 px solid black;
+}
+Table tr td{
+  border:1px solid black;
+}
+Table thead tr th{
+  border:1px solid black;
+}
+Table{
+  border:1px solid black;
+  
+}
+header{
+  position: sticky;
+  top: 0;
+}
+Table thead{
+  position: sticky;
+  top: 56px;
+}

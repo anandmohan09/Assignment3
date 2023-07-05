@@ -97,7 +97,7 @@ function ExampleModal({ show, setShow, buttonName, editId, setLength, post,modal
           <Form onSubmit={(e) => { submit(e) }}>
             <Form.Group className="mb-3" >
               <Form.Label>First Name</Form.Label>
-              <Form.Control type="text" placeholder="first name" onChange={(e) => { handleChange(e) }} name='FirstName' value={profile.FirstName} required />
+              <Form.Control type="text" placeholder="first name" onChange={(e) => { handleChange(e) }} name='FirstName' value={profile.FirstName} autoFocus required />
             </Form.Group>
             <Form.Group className="mb-3" >
               <Form.Label>Last Name</Form.Label>
@@ -127,7 +127,7 @@ function ExampleModal({ show, setShow, buttonName, editId, setLength, post,modal
                 type='radio' />
             </Form.Group>
             <div className='d-flex justify-content-end'>
-              <Button variant="primary me-2" type='submit' >
+              <Button variant="primary me-2" type='submit' style={{height:'40px'}} >
                 {buttonName}
               </Button>
               <ToastContainer
