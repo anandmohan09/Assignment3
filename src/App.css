@@ -57,3 +57,6 @@ Table thead{
   position: sticky;
   top: 56px;
 }
+nav ul{
+  justify-content: center;
+}
